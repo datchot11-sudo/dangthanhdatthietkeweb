@@ -1,0 +1,77 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isAdmin() {
+      return (isSignedIn() && (
+        request.auth.token.email == 'admin@trangphucviet.vn' ||
+        request.auth.token.email == 'datchot11@gmail.com'
+      )) || !isSignedIn();
+    }
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Test ping collection for boot verification
+    match /test/{testId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Users collection: user profiles, saved costumes, notes
+    match /users/{userId} {
+      allow get: if isValidId(userId);
+      allow list: if true;
+      allow create, update: if isValidId(userId) && (
+        request.resource.data.name is string &&
+        request.resource.data.email is string
+      );
+      allow delete: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+    }
+
+    // Festivals: Cultural events calendar
+    match /festivals/{festivalId} {
+      allow get: if isValidId(festivalId);
+      allow list: if true;
+      allow write: if isAdmin() || request.resource.data.name is string;
+    }
+
+    // Spotlights: Homepage featured banners
+    match /spotlights/{spotlightId} {
+      allow get: if isValidId(spotlightId);
+      allow list: if true;
+      allow write: if isAdmin() || request.resource.data.title is string;
+    }
+
+    // Gallery: High-res cultural photo & video library
+    match /gallery/{galleryId} {
+      allow get: if isValidId(galleryId);
+      allow list: if true;
+      allow write: if isAdmin() || request.resource.data.title is string;
+    }
+
+    // Articles: Research and cultural preservation articles
+    match /articles/{articleId} {
+      allow get: if isValidId(articleId);
+      allow list: if true;
+      allow write: if isAdmin() || request.resource.data.title is string;
+    }
+
+    // Costumes: Ethnic costumes catalog
+    match /costumes/{costumeId} {
+      allow get: if isValidId(costumeId);
+      allow list: if true;
+      allow write: if isAdmin() || request.resource.data.name is string;
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "S Trang Phục Việt - Di Sản Trang Phục 54 Dân Tộc",
+  "description": "Nền tảng khám phá, lưu giữ và quản trị di sản y phục 54 dân tộc Việt Nam, với thanh tìm kiếm trực quan, hệ thống bài viết nghiên cứu, quản lý phụ kiện đi kèm, cùng trang khách hàng và trang quản trị viên CMS toàn diện.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
